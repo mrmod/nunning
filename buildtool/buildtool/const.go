@@ -1,0 +1,5 @@
+package buildtool
+
+const (
+	spaceSlug = " "
+)
