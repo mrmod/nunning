@@ -1,0 +1,79 @@
+- Target:
+    Name: House
+    Build:
+        Inputs:
+            - :Lumber
+            - :Nails
+            - :Concrete
+            - :Labor
+        Outputs:
+            - /house.zip
+
+# Error: House is not a required Target
+- Target:
+    Name: Community
+    Build:
+        Inputs:
+            - :House/house.zip
+            - //AnotherParcel/:House/house.zip
+
+# OK
+- Target:
+    Name: Community
+    Requires:
+        - :House
+    Build:
+        Inputs:
+            - :House/house.zip
+            - //AnotherParcel/:House/house.zip
+
+# Things to do with a set of inputs to produce a single output
+- TargetRule:
+    Target: House
+    BuildRule:
+        BuildTool:
+            Url: https://something-with-a-stable-checksum
+        BuildToolsOptions:
+            EnvironmentVariables:
+                USE_WILD_FEATURE: yes
+            Arguments:
+                - --some-option
+                - some-option-input-value
+                - --enable-feature-flag
+                - --zip-file-name $Target.Outputs[0]
+
+
+# Things to do with a set of inputs to produce a single output
+- Name: House
+  Inputs:
+      - :Lumber
+      - :Nails
+      - :Concrete
+      - :Labor
+  Outputs:
+      - /house.zip
+  BuildTool: https://something-with-a-stable-checksum
+  BuildToolsOptions:
+      EnvironmentVariables:
+          USE_WILD_FEATURE: yes
+      Arguments:
+          - --some-option
+          - some-option-input-value
+          - --enable-feature-flag
+          - --zip-file-name $Target.Outputs[0]
+- Name: Community
+  Requires:
+    - :House
+  Inputs:
+    - :House/house.zip
+    - //AnotherParcel/:House/house.zip
+    - https://FireDepartmentBuildTool/:Hydrant
+  Outputs:
+    - stdout://
+    - stderr://
+  BuildTool: https://something-with-a-stable-checksum
+  BuildToolOptions:
+    Arguments:
+      - --just-enough
+      - --members
+      - "fun://join?list=$Inputs&joinWith=,"

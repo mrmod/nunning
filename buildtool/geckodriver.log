@@ -1,0 +1,59 @@
+1693930472370	geckodriver	INFO	Listening on 127.0.0.1:50962
+1693930472731	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/App ... s" "localhost" "-foreground" "-no-remote" "-profile" "/var/folders/b5/75c80rc16ngf1k2s30hqct5w0000gn/T/rust_mozprofileZOUos0"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1693930473470	Marionette	INFO	Marionette enabled
+console.error: "Warning: unrecognized command line flag" "-remote-allow-hosts"
+1693930473898	Marionette	INFO	Listening on port 50973
+WebDriver BiDi listening on ws://127.0.0.1:50963
+Read port: 50973
+1693930474225	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+DevTools listening on ws://127.0.0.1:50963/devtools/browser/56b284a8-ecd3-4400-96a7-910679ca3ea1
+1693930493400	Marionette	INFO	Stopped listening on port 50973
+1693930496562	geckodriver	INFO	Listening on 127.0.0.1:51006
+1693930497080	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/App ... s" "localhost" "-foreground" "-no-remote" "-profile" "/var/folders/b5/75c80rc16ngf1k2s30hqct5w0000gn/T/rust_mozprofile7UPV7I"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1693930497625	Marionette	INFO	Marionette enabled
+console.error: "Warning: unrecognized command line flag" "-remote-allow-hosts"
+1693930497821	Marionette	INFO	Listening on port 51014
+Read port: 51014
+WebDriver BiDi listening on ws://127.0.0.1:51007
+1693930498048	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+DevTools listening on ws://127.0.0.1:51007/devtools/browser/77ce0e6a-e665-4d99-ab9c-10b8d73e6e74
+JavaScript warning: https://backyardcam/module/Decode/jsFFMPEG.js, line 0: Successfully compiled asm.js code (total compilation time 301ms)
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://backyardcam."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://backyardcam."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://backyardcam."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://backyardcam."
+console.warn: "Listener for event 'frame' did not return a promise."
+JavaScript warning: https://backyardcam/module/Decode/jsFFMPEG.js, line 0: asm.js type error: Asm.js optimizer disabled because debugger is active
+console.warn: "Listener for event 'frame' did not return a promise."
+JavaScript warning: https://backyardcam/module/Decode/jsFFMPEG.js, line 0: asm.js type error: Asm.js optimizer disabled because debugger is active
+console.warn: "Listener for event 'frame' did not return a promise."
+1693932610672	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'interactive'.
+console.warn: "Listener for event 'frame' did not return a promise."
+1693933972069	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'interactive'.
+console.warn: "Listener for event 'frame' did not return a promise."
+console.warn: "Listener for event 'frame' did not return a promise."
+1693935132324	Marionette	WARN	Ignoring event 'DOMContentLoaded' because document has an invalid readyState of 'complete'.
+console.warn: "Listener for event 'frame' did not return a promise."
+1693936140280	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'interactive'.
+console.warn: "Listener for event 'frame' did not return a promise."
+console.warn: "Listener for event 'frame' did not return a promise."
+1693936945281	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'interactive'.
+console.warn: "Listener for event 'frame' did not return a promise."
+console.warn: "Listener for event 'frame' did not return a promise."
+console.error: (new TypeError("watcher.browserElement.browsingContext is null", "resource://devtools/server/actors/watcher/target-helpers/frame-helper.js", 193))
+Handler function threw an exception: Error: Got notified about channel 125011465601789 more than once.
+Stack: onNetworkEvent@resource://devtools/server/actors/resources/network-events.js:279:13
+#createNetworkEvent@resource://devtools/shared/network-observer/NetworkObserver.sys.mjs:684:46
+@resource://devtools/shared/network-observer/NetworkObserver.sys.mjs:342:33
+makeInfallible/<@resource://devtools/shared/DevToolsInfaillibleUtils.sys.mjs:43:22
+Line: 279, column: 13
+console.error: (new Error("Got notified about channel 125011465601789 more than once.", "resource://devtools/server/actors/resources/network-events.js", 279))
+JavaScript error: https://backyardcam/jsCore/plugin.js, line 2: NS_ERROR_FAILURE: 
+JavaScript error: resource://gre/modules/Prompter.sys.mjs, line 1042: AbortError: Actor 'Prompt' destroyed before query 'Prompt:Open' was resolved
+1694273863172	Marionette	INFO	Stopped listening on port 51014
+console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+console.error: "Failed to fetch https://spocs.getpocket.com/user:" "NetworkError when attempting to fetch resource."

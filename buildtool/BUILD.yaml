@@ -1,0 +1,14 @@
+Targets:
+    
+  - Name: buildtool # The name of this Target
+    Build: 
+      Inputs: # Arguments are treated as strings
+        - main.go
+      Outputs:
+        - /buildtool
+    BuildTool: buildtool/go
+    BuildToolOptions:
+      Arguments: 
+        - "-o"
+        - ".{{ index .Build.Outputs 0 }}"
+        - "{{ .Build.Inputs | Merge }}"
