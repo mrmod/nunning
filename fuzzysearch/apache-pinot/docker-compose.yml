@@ -1,0 +1,81 @@
+version: "2.2"
+
+volumes:
+  metadata_data: {}
+  middle_var: {}
+  historical_var: {}
+  broker_var: {}
+  coordinator_var: {}
+  router_var: {}
+  druid_shared: {}
+
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - metadata_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=FoolishPassword
+      - POSTGRES_USER=druid
+      - POSTGRES_DB=druid
+
+  # Need 3.5 or later for container nodes
+  pinot_zookeeper:
+    container_name: pinot_zookeeper
+    image: zookeeper:3.5.10
+    ports:
+      - "2181:2181"
+    environment:
+      - ZOO_MY_ID=1
+  pinot_controller:
+    container_name: pinot_controller
+    image: apachepinot/pinot:latest
+    environment:
+      - JAVA_OPTS=-Dplugins.dir=/opt/pinot/plugins -Xms1G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-controller.log
+    ports:
+      - "9000:9000"
+    depends_on:
+      - pinot_zookeeper
+    command: "StartController -zkAddress pinot_zookeeper:2181 -controllerHost pinot_controller" # -port 9000 -configFileName /opt/pinot/conf/pinot-controller.conf"
+    
+  pinot_broker:
+    container_name: pinot_broker
+    image: apachepinot/pinot:latest
+    environment:
+      - JAVA_OPTS=-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-broker.log
+    ports:
+      - "8099:8099"
+    depends_on:
+      - pinot_zookeeper
+      - pinot_controller
+    command: "StartBroker -zkAddress pinot_zookeeper:2181" # -port 8099 -configFileName /opt/pinot/conf/pinot-broker.conf"
+
+  pinot_server:
+    container_name: pinot_server
+    image: apachepinot/pinot:latest
+    environment:
+      - JAVA_OPTS=-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx16G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-server.log
+    ports:
+      - "8098:8098"
+    depends_on:
+      - pinot_zookeeper
+      - pinot_broker
+      - pinot_controller
+    command: "StartServer -zkAddress pinot_zookeeper:2181" # -port 8099 -configFileName /opt/pinot/conf/pinot-broker.conf"
+
+  # pinot_kafka:
+  #   container_name: pinot_kafka
+  #   image: bitnami/kafka:latest
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=pinot_zookeeper:2181
+  #     - KAFKA_BROKER_ID=0
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://pinot_kafka:9092
+  #     - KAFKA_ADVERTISED_HOST_NAME=pinot_kafka
+  #   depends_on:
+  #     - pinot_zookeeper
