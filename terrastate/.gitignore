@@ -1,0 +1,12 @@
+node_modules
+mockData.js
+config.dev.json
+
+bazel-bin
+bazel-out
+bazel-terrastate
+bazel-testlogs
+
+self.dev.*.plan
+self.dev.*.plan.json
+.terraform

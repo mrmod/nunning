@@ -1,0 +1,27 @@
+# Javascript/Typescript npm packages setup
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages()
+
+# Go packages setup
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+gazelle(name = "gazelle")
+
+genrule(
+    # action_env=AWS_PROFILE=$AWS_PROFILE
+    name = "plan",
+    srcs = glob([
+        "*.tf",
+        ".terraform/**",
+        "$HOME/.aws/**",
+    ]),
+    outs = ["self.dev.plan"],
+    cmd = "terraform plan -out self.dev.plan",
+)
+
+genrule(
+    name = "plan_json",
+    outs = ["self.dev.plan.json"],
+    cmd = "terraform show -json self.dev.plan > self.dev.plan.json",
+)

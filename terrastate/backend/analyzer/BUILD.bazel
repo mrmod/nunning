@@ -1,0 +1,31 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/mrmod/terrastate/analyzer
+gazelle(name = "gazelle")
+
+go_library(
+    name = "analyzer",
+    srcs = [
+        "config.go",
+        "get_plan.go",
+        "plan_analyzer.go",
+        "save_plan.go",
+    ],
+    importpath = "github.com/mrmod/terrastate/analyzer",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_aws_aws_sdk_go_v2//aws",
+        "@com_github_aws_aws_sdk_go_v2_config//:config",
+        "@com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue//:attributevalue",
+        "@com_github_aws_aws_sdk_go_v2_service_dynamodb//:dynamodb",
+        "@com_github_aws_aws_sdk_go_v2_service_dynamodb//types",
+        "@com_github_aws_aws_sdk_go_v2_service_s3//:s3",
+    ],
+)
+
+go_test(
+    name = "analyzer_test",
+    srcs = ["plan_analyzer_test.go"],
+    embed = [":analyzer"],
+)
