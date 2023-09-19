@@ -67,6 +67,17 @@ services:
       - pinot_controller
     command: "StartServer -zkAddress pinot_zookeeper:2181" # -port 8099 -configFileName /opt/pinot/conf/pinot-broker.conf"
 
+  pinot_minion:
+    container_name: pinot_minion
+    image: apachepinot/pinot:latest
+    # environment:
+    #   - JAVA_OPTS=-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx16G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-server.log
+    depends_on:
+      - pinot_zookeeper
+      - pinot_broker
+      - pinot_controller
+    command: "StartMinion -zkAddress pinot_zookeeper:2181" # -port 8099 -configFileName /opt/pinot/conf/pinot-broker.conf"
+
   # pinot_kafka:
   #   container_name: pinot_kafka
   #   image: bitnami/kafka:latest
