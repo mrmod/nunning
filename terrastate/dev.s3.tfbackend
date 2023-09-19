@@ -1,0 +1,3 @@
+bucket = "syntheticanimal.com-2f09jceihjdf"
+key = "projects/terrastate/state/dev"
+region = "us-west-2"
