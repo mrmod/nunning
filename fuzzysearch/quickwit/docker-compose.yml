@@ -1,0 +1,14 @@
+version: "2.2"
+
+volumes:
+  fuzzysearch_quickwit: {}
+
+services:
+  fuzzysearch_quickwit:
+    container_name: fuzzysearch_quickwit
+    image: quickwit/quickwit:latest
+    ports:
+      - "7280:7280"
+    volumes:
+      - fuzzysearch_quickwit:/qwdata
+    command: run
