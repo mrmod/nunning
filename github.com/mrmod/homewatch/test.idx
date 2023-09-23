@@ -1,0 +1,10 @@
+'ACamera/2022-09-29/001/dav/12/12.34.59-12.35.20[M][0@0][0].idx'                                                           
+cameras@void:~$ cat ACamera/2022-09-29/001/dav/12/12.34.59-12.35.20[M][0@0][0].idx                                         
+Event={"Action":"Start","Data":{"Id":[1],"RegionName":["Street"]},"Index":1,"Name":"VideoMotion"}                               
+EncodeFormat={"Audio":{"Bitrate":64,"Channels":[0],"Compression":"AAC","Depth":16,"Frequency":8000,"Mode":0,"Pack":"DHAV"},"AudioEnable":false,"Video":{"BitRate":4096,"BitRateControl":"CBR","Compression":"H.265","CustomResolutionName":"3840x2160","FPS":15,"
+GOP":30,"Height":2160,"Pack":"DHAV","Priority":0,"Profile":"Main","Quality":4,"QualityRange":6,"SVCTLayer":1,"Width":3840},"VideoEnable":true}
+Frame="P,47281928210,0,5158,1"                                                                                                  
+Frame="P,47281928310,5158,6469,0"                                                                                               
+Frame="P,47281928360,11627,26262,0"                                                                                             
+Frame="P,47281928460,37889,19402,0"                                                                                             
+Frame="P,47281928510,57291,1229,0"        

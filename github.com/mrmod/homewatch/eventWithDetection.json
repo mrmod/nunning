@@ -1,0 +1,65 @@
+{
+    "Action": "Start",
+    "Data": {
+        "Action": "Appear",
+        "Class": "Normal",
+        "CountInGroup": 0,
+        "DetectRegion": [
+            [
+                123,
+                189
+            ],
+            [
+                119,
+                8055
+            ],
+            [
+                8072,
+                8055
+            ],
+            [
+                8055,
+                174
+            ]
+        ],
+        "EventID": 10227,
+        "GroupID": 148,
+        "Name": "Rule2",
+        "Object": {
+            "Action": "Appear",
+            "BoundingBox": [
+                376,
+                16,
+                1480,
+                1136
+            ],
+            "BrandYear": 0,
+            "CarLogoIndex": 0,
+            "Category": "Unknown",
+            "Center": [
+                928,
+                576
+            ],
+            "Confidence": 0,
+            "MainColor": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "ObjectID": 439,
+            "ObjectType": "Vehicle",
+            "RelativeID": 0,
+            "Speed": 0,
+            "SubBrand": 0,
+            "Text": "Unknown"
+        },
+        "PTS": 42969047630,
+        "RuleID": 2,
+        "Track": [],
+        "UTC": 1644929237,
+        "UTCMS": 671
+    },
+    "Index": 1,
+    "Name": "CrossRegionDetection"
+}
