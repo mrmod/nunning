@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	renameMessage  = "sftp.rename.message"
+	renameMessage  = "testdata/internalSftp.rename.syslogMessage"
 	putMessage     = "sftp.put.message"
 	unknownCommand = "sftp.unknownCommand.message"
 )
@@ -40,8 +40,8 @@ func TestUnmarshalSyslogMessageText(t *testing.T) {
 		t.Fatalf("Expected '190', got %s", c)
 	}
 
-	if cmd := m.Command; cmd != "posix-rename" {
-		t.Fatalf("Expected 'posix-rename', got %s", cmd)
+	if cmd := m.Command; cmd != "posix-rename" && cmd != "rename" {
+		t.Fatalf("Expected 'posix-rename' or 'rename', got %s", cmd)
 	}
 	if action := m.Action; len(action) == 0 {
 		t.Fatalf("Expected a non-zero action length")
@@ -69,11 +69,11 @@ func TestParseRenameMessage(t *testing.T) {
 	if rm == nil {
 		t.Fatalf("Expected a RenameMessage, got %v", rm)
 	}
-	srcExpect := "/mnt/VideoUploads/badData.json"
+	srcExpect := "\\\"/home/cameras/SomeTestCamera/2000-01-01/001/dav/00/00.35.41-00.35.41[M][0@0][0].dav_\\"
 	if rm.Src != srcExpect {
 		t.Fatalf("Expected '%s', got %s", srcExpect, rm.Src)
 	}
-	destExpect := "/mnt/VideoUploads/newData.json"
+	destExpect := "\\\"/home/cameras/SomeTestCamera/2000-01-01/001/dav/00/00.35.43-00.42.22[M][0@0][0].dav\\"
 	if rm.Dest != destExpect {
 		t.Fatalf("Expected '%s', got %s", destExpect, rm.Dest)
 	}

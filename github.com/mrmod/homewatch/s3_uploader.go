@@ -43,7 +43,9 @@ func DefaultS3Client() *s3.Client {
 	})
 }
 
-/* NewS3Uploader
+/*
+	NewS3Uploader
+
 Create a new uploader where the bucketUrl is a valid, schemed, url like
 s3://bucket/prefix/deeperPrefix
 */
@@ -62,7 +64,9 @@ func NewS3Uploader(s3Client *s3.Client, bucketUrl string) *S3Uploader {
 	}
 }
 
-/* TrimLocalPrefix: Set the local prefix to trim from video files
+/*
+	TrimLocalPrefix: Set the local prefix to trim from video files
+
 before uploading them
 */
 func (u *S3Uploader) TrimLocalPrefix(prefix string) {
@@ -77,7 +81,9 @@ const (
 )
 
 func (u *S3Uploader) UploadFile(filepath string, status chan<- int) {
-
+	if flagVerbose {
+		log.Printf("Uploading %s", filepath)
+	}
 	body, err := os.Open(filepath)
 	if err != nil {
 		log.Printf("Error opening video file %s: %s", filepath, err)
