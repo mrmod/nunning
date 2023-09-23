@@ -48,8 +48,17 @@ const (
 )
 
 var (
-	dateDecoder = regexp.MustCompile(`^<(?P<code>\d+)>(?P<month>[A-Z][a-z]*)\ *(?P<dom>\d{1,2})\ (?P<hms>\d{1,2}:\d{1,2}:\d{1,2})\ *(?P<rest>.*$)`)
-	bodyDecoder = regexp.MustCompile(`(?P<logHost>\w+)\ *(?P<service>[\w-]*)\[(?P<pid>\d+)\]:\ *(?P<cmd>[\w-]*)\ *(?P<action>.*$)`)
+	dateDecoderV1 = regexp.MustCompile(`^<(?P<code>\d+)>(?P<month>[A-Z][a-z]*)\ *(?P<dom>\d{1,2})\ (?P<hms>\d{1,2}:\d{1,2}:\d{1,2})\ *(?P<rest>.*$)`)
+	dataDecoderV2 = regexp.MustCompile(`^(?P<code>\d+) (?P<dateTime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4} UTC)\ *(?P<rest>.*$)`)
+	bodyDecoderV1 = regexp.MustCompile(`(?P<logHost>\w+)\ *(?P<service>[\w-]*)\[(?P<pid>\d+)\]:\ *(?P<cmd>[\w-]*)\ *(?P<action>.*$)`)
+	bodyDecoder   = regexp.MustCompile(`^(?P<logHost>\w+)[\t\ ]*(?P<service>[\w-]*)[\t\ ]*(?P<pid>\d+)[\t\ ]*(?P<cmd>[\w-]*)\ *(?P<action>.*$)`)
+	dateDecoders  = []*regexp.Regexp{dateDecoderV1, dataDecoderV2}
+	timeFormats   = []string{
+		// dateDecoderV1
+		"Jan 2, 2006 15:04:05 MST",
+		// dateDecoderV2
+		"2006-01-02 15:04:05 -0700 UTC",
+	}
 )
 
 func NewSyslogMessage(b []byte) *SyslogMessage {
@@ -70,12 +79,19 @@ func extractTime(logMessage string, matches [][]int) *time.Time {
 	template := fmt.Sprintf("$month $dom, %d $hms %s", time.Now().Local().Year(), zone)
 
 	output := []byte{}
+	var t time.Time
+	for i, decoder := range dateDecoders {
+		date := decoder.ExpandString(output, template, logMessage, matches[0])
 
-	date := dateDecoder.ExpandString(output, template, logMessage, matches[0])
+		_t, err := time.Parse(timeFormats[i], string(date))
+		if err != nil {
+			if flagDebug {
+				log.Printf("Failed to parse %s: %s", string(date), err)
+			}
 
-	t, err := time.Parse("Jan 2, 2006 15:04:05 MST", string(date))
-	if err != nil {
-		log.Printf("Failed to parse %s: %s", string(date), err)
+			continue
+		}
+		t = _t
 	}
 
 	return &t
@@ -88,6 +104,9 @@ func (m *SyslogMessage) RenameMessage() *RenameMessage {
 
 	parts := strings.Split(m.Action, " ")
 
+	if flagVerbose {
+		log.Printf("Parts: %#v", parts)
+	}
 	return &RenameMessage{
 		SyslogMessage: *m,
 		Src:           strings.Trim(parts[1], "\""),
@@ -111,13 +130,27 @@ func (m *SyslogMessage) PutMessage() *PutMessage {
 }
 
 func (m *SyslogMessage) UnmarshalText(b []byte) error {
+	var (
+		dateDecoder *regexp.Regexp
+		matches     = [][]int{}
+	)
+
 	logMessage := string(b)
-	matches := dateDecoder.FindAllStringSubmatchIndex(logMessage, -1)
-	if len(matches) != 1 {
-		if flagVerbose {
-			log.Printf("No matches for %s", logMessage)
+
+	for i, decoder := range dateDecoders {
+
+		matches = decoder.FindAllStringSubmatchIndex(logMessage, -1)
+		if len(matches) != 1 {
+			if flagVerbose {
+				log.Printf("No matches for decoder %d with %s", i, logMessage)
+			}
+			continue
 		}
-		return fmt.Errorf("invalid log message structure")
+		if flagVerbose {
+			log.Printf("Matched decoder %d", i)
+		}
+		dateDecoder = decoder
+
 	}
 	messageTime := extractTime(logMessage, matches)
 
@@ -143,6 +176,9 @@ func (m *SyslogMessage) UnmarshalText(b []byte) error {
 	m.PID = bodyMatches[bodyDecoder.SubexpIndex("pid")]
 	m.Action = bodyMatches[bodyDecoder.SubexpIndex("action")]
 
+	if flagVerbose {
+		log.Printf("Message: %#v", m)
+	}
 	return nil
 }
 

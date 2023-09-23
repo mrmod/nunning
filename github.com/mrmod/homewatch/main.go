@@ -75,6 +75,8 @@ func debugFlags() {
 	log.Printf("EnableVideoUpload: %v", flagEnableVideoUpload)
 	log.Printf("EnableEventUpload: %v", flagEnableEventUpload)
 	log.Printf("VideoTrimPrefix: %s", flagVideoTrimPrefix)
+	log.Printf("DebugOutput: %v", flagDebug)
+	log.Printf("VerboseOutput: %v", flagVerbose)
 }
 
 func main() {
