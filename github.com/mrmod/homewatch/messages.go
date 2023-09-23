@@ -59,6 +59,15 @@ var (
 		// dateDecoderV2
 		"2006-01-02 15:04:05 -0700 UTC",
 	}
+	timeStringers = []func() string{
+		func() string {
+			zone, _ := time.Now().Zone()
+			return fmt.Sprintf("$month $dom, %d $hms %s", time.Now().Local().Year(), zone)
+		},
+		func() string {
+			return "$dateTime"
+		},
+	}
 )
 
 func NewSyslogMessage(b []byte) *SyslogMessage {
@@ -75,12 +84,10 @@ func NewSyslogMessage(b []byte) *SyslogMessage {
 
 func extractTime(logMessage string, matches [][]int) *time.Time {
 
-	zone, _ := time.Now().Zone()
-	template := fmt.Sprintf("$month $dom, %d $hms %s", time.Now().Local().Year(), zone)
-
 	output := []byte{}
 	var t time.Time
 	for i, decoder := range dateDecoders {
+		template := timeStringers[i]()
 		date := decoder.ExpandString(output, template, logMessage, matches[0])
 
 		_t, err := time.Parse(timeFormats[i], string(date))
@@ -90,6 +97,9 @@ func extractTime(logMessage string, matches [][]int) *time.Time {
 			}
 
 			continue
+		}
+		if flagVerbose {
+			log.Printf("[%s] Parsed log message time from %s", string(date), logMessage)
 		}
 		t = _t
 	}
