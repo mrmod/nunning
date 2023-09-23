@@ -1,0 +1,18 @@
+[Unit]
+Description=homewatch syslog and uploader
+After=network.target
+Before=rsyslog.service
+
+[Service]
+Type=forking
+KillMode=process
+
+User=cameras
+Group=cameras
+
+WorkingDirectory=/home/cameras/
+Restart=on-failure
+ExecStart=bash /home/cameras/start.sh
+
+[Install]
+WantedBy=multi-user.target
