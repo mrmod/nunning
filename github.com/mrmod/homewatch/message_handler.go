@@ -28,7 +28,7 @@ func (s SyslogMessageHandler) Run() {
 		}
 		for message := range s.Messages {
 			if flagVerbose {
-				log.Printf("SyslogMessage recieved")
+				log.Printf("SyslogMessage recieved for MessageType %d and Command %s", message.MessageType(), message.Command)
 			}
 			switch messageType := message.MessageType(); messageType {
 			case SftpRenameMessageType:

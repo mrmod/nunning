@@ -7,10 +7,32 @@ import (
 )
 
 var (
-	renameMessage  = "testdata/internalSftp.rename.syslogMessage"
-	putMessage     = "sftp.put.message"
-	unknownCommand = "sftp.unknownCommand.message"
+	renameMessage        = "testdata/internalSftp.rename.syslogMessage"
+	sessionClosedMessage = "testdata/internalSftp.sessionClosed.syslogMessage"
+	putMessage           = "sftp.put.message"
+	unknownCommand       = "sftp.unknownCommand.message"
 )
+
+func TestUnmarshalSessionClosedMessage(t *testing.T) {
+	fp, err := os.Open(sessionClosedMessage)
+	if err != nil {
+		t.Fail()
+	}
+	defer fp.Close()
+
+	b, err := io.ReadAll(fp)
+	if err != nil {
+		t.Fail()
+	}
+	m := SyslogMessage{}
+	err = m.UnmarshalText(b)
+	if err != nil {
+		t.Fatalf("Expected to decode the messsage, got %s", err)
+	}
+	if cmd := m.Command; cmd != "session" {
+		t.Fatalf("Expected 'session', got %s", cmd)
+	}
+}
 
 func TestUnmarshalSyslogMessageText(t *testing.T) {
 	fp, err := os.Open(renameMessage)
