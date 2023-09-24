@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homewatch</title>
+
+</head>
+
+<body>
+    <div>
+        <h1>Homewatch __VERSION__ </h1>
+        <input id="login" type="email" name="email" placeholder="Login..." />
+        <button id="doLogin" name="l">Login</button>
+    </div>
+    <script>
+
+        const loginInput = document.getElementById("login")
+        const doLoginButton = document.getElementById("doLogin")
+        const LOGIN_URL = "/api/home/login"
+
+        const doLogin = () => {
+            let login = loginInput.value
+
+            if (!login.includes("@")) {
+
+                return
+            }
+            login = btoa(login)
+
+            let url = `${LOGIN_URL}?email=${loginInput.value}&l=${login}`
+            doLoginButton.setAttribute("disabled", "true")
+            doLoginButton.innerHTML = "Logging in..."
+            fetch(url, {
+                method: "GET",
+                credentials: "include",
+            })
+                .then(response => response.json())
+                .then(({ url }) => fetch(url, { credentials: "include" }))
+                .then(response => {
+                    return response.text()
+                })
+                .then(() => window.location.href = "/home.html")
+            // TODO: Error handling
+        }
+
+        doLoginButton.addEventListener("click", (event) => doLogin())
+    </script>
+</body>
+
+</html>
