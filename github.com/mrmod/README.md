@@ -61,3 +61,9 @@ A HTTP Service which exchanges a received `CLIENT_CREDENTIAL` a client knows wit
 # BazelCredentialHelper
 
 An HTTP Client which sends an env `CLIENT_CREDENTIAL` value to `localhost:8080` and exits with a JSON document of authorized headers as expected by the Bazel experimental Credential Helper interface.
+
+# HttpTransportInjector
+
+An example of how to test third-party HTTP APIs are getting the proper requests from your code and that your code is handling its responses correctly.
+
+Demonstrates an `http.DefaultClient.Transport` dependency injection for integration testing against third-party APIs without making remote calls.
