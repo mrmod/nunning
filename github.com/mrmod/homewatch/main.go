@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+
+	v2 "github.com/mrmod/homewatch/v2"
 )
 
 var (
@@ -29,6 +31,11 @@ var (
 	flagDecodeVideo       bool
 	flagEnableEventUpload bool
 	flagEnableVideoUpload bool
+
+	flagEnableV2            bool
+	flagV2WatchPaths        string
+	flagV2EnableMetrics     bool
+	flagV2EnableWatchReaper bool
 )
 
 func parseFlags() {
@@ -52,6 +59,10 @@ func parseFlags() {
 	flag.StringVar(&flagVideoTrimPrefix, "video-trim-prefix", "", "Prefix to trim from uploaded videos")
 	flag.StringVar(&flagIndexTrimPrefix, "index-trim-prefix", "", "Prefix to trim from uploaded indexes")
 
+	flag.BoolVar(&flagEnableV2, "v2", false, "Enable v2 API")
+	flag.StringVar(&flagV2WatchPaths, "v2-watch-paths", "", "Comma separated list of paths to watch for changes")
+	flag.BoolVar(&flagV2EnableMetrics, "v2-enable-metrics", false, "Enable prometheus metrics")
+	flag.BoolVar(&flagV2EnableWatchReaper, "v2-enable-watch-reaper", false, "Enable watch reaper")
 	flag.Parse()
 	if len(strings.Split(flagSyslogServerAddress, ":")) != 2 {
 		panic(fmt.Sprintf("Invalid syslogserveraddress: %s", flagSyslogServerAddress))
@@ -78,11 +89,61 @@ func debugFlags() {
 	log.Printf("DebugOutput: %v", flagDebug)
 	log.Printf("VerboseOutput: %v", flagVerbose)
 }
+func tryCreateS3Uploader() *S3Uploader {
+	// Setup S3 uploader for video files
+	if flagEnableVideoUpload && strings.HasPrefix(flagS3VideoBucketUrl, "s3://") {
+		log.Printf("DEBUG: Creating S3 uploader for video files to %s", flagS3VideoBucketUrl)
+		uploader := NewS3Uploader(DefaultS3Client(), flagS3VideoBucketUrl)
+		uploader.TrimLocalPrefix(flagVideoTrimPrefix)
+
+		return uploader
+	}
+	return nil
+}
 
 func main() {
+
 	parseFlags()
 	if flagDebug {
 		debugFlags()
+	}
+
+	if flagEnableV2 {
+		var metrics *v2.CameraMetrics
+		log.Printf("Starting v2")
+		fileEvents := make(chan string, 1)
+		uploader := tryCreateS3Uploader()
+		if flagV2EnableMetrics {
+			// v2.MetricsPort = "2112"
+			metrics = v2.NewCameraMetrics(flagVideoTrimPrefix)
+			go metrics.Handle()
+		}
+		if flagV2EnableWatchReaper {
+			go v2.WatchReaper()
+		}
+
+		go func() {
+			for fileEvent := range fileEvents {
+				log.Printf("DEBUG: File event: %s", fileEvent)
+				if flagV2EnableMetrics && metrics != nil {
+					log.Printf("DEBUG: Sending video event to metrics: %s", fileEvent)
+					metrics.VideoEvents <- fileEvent
+				}
+
+				if uploader != nil {
+					go func(videoFilename string) {
+						done := make(chan int, 1)
+						log.Printf("DEBUG: Uploading file: %s", videoFilename)
+						go uploader.UploadFile(videoFilename, done)
+						<-done
+						metrics.UploadEvents <- videoFilename
+					}(fileEvent)
+				}
+			}
+		}()
+		v2.Listen(fileEvents, strings.Split(flagV2WatchPaths, ",")...)
+
+		return
 	}
 	syslogServer := NewSyslogServer(flagSyslogServerAddress)
 	messageHandler := NewSyslogMessageHandler()
