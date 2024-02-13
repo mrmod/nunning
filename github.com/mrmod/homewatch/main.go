@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+
+	v2 "github.com/mrmod/homewatch/v2"
 )
 
 var (
@@ -29,6 +31,9 @@ var (
 	flagDecodeVideo       bool
 	flagEnableEventUpload bool
 	flagEnableVideoUpload bool
+
+	flagEnableV2     bool
+	flagV2WatchPaths string
 )
 
 func parseFlags() {
@@ -52,6 +57,8 @@ func parseFlags() {
 	flag.StringVar(&flagVideoTrimPrefix, "video-trim-prefix", "", "Prefix to trim from uploaded videos")
 	flag.StringVar(&flagIndexTrimPrefix, "index-trim-prefix", "", "Prefix to trim from uploaded indexes")
 
+	flag.BoolVar(&flagEnableV2, "v2", false, "Enable v2 API")
+	flag.StringVar(&flagV2WatchPaths, "v2-watch-paths", "", "Comma separated list of paths to watch for changes")
 	flag.Parse()
 	if len(strings.Split(flagSyslogServerAddress, ":")) != 2 {
 		panic(fmt.Sprintf("Invalid syslogserveraddress: %s", flagSyslogServerAddress))
@@ -80,9 +87,16 @@ func debugFlags() {
 }
 
 func main() {
+
 	parseFlags()
 	if flagDebug {
 		debugFlags()
+	}
+
+	if flagEnableV2 {
+		log.Printf("Starting v2")
+		v2.Listen(strings.Split(flagV2WatchPaths, ",")...)
+		return
 	}
 	syslogServer := NewSyslogServer(flagSyslogServerAddress)
 	messageHandler := NewSyslogMessageHandler()
