@@ -36,6 +36,11 @@ func AddPaths(w *fsnotify.Watcher, root string) error {
 	return filepath.WalkDir(root, walkFun)
 }
 
+// HandleWrite is called when a file is written to
+func HandleWrite(event fsnotify.Event) {
+	log.Printf("DEBUG: Modified file: %s", event.Name)
+}
+
 // Listen starts watching for changes on the given paths
 func Listen(paths ...string) {
 	watcher, err := fsnotify.NewWatcher()
@@ -55,7 +60,8 @@ func Listen(paths ...string) {
 				}
 				log.Printf("event: %#v Op: %s", event, event.Op)
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					log.Printf("modified file: %s", event.Name)
+					// TODO: project:homewatch2.0
+					HandleWrite(event)
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
