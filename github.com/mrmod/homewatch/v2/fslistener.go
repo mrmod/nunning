@@ -16,6 +16,8 @@ func tryAddPath(w *fsnotify.Watcher, root string) error {
 	log.Printf("INFO: Added watch on '%s'", root)
 	return nil
 }
+
+// AddPaths adds child paths of some root path
 func AddPaths(w *fsnotify.Watcher, root string) error {
 	errorPaths := []string{}
 	walkFun := func(path string, d fs.DirEntry, err error) error {
@@ -34,6 +36,7 @@ func AddPaths(w *fsnotify.Watcher, root string) error {
 	return filepath.WalkDir(root, walkFun)
 }
 
+// Listen starts watching for changes on the given paths
 func Listen(paths ...string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -63,10 +66,6 @@ func Listen(paths ...string) {
 		}
 	}()
 	for _, path := range paths {
-		// TODO: Track which paths are watched
-		// TODO: Should get list of child paths each iteration
-		// TODO: Should add child paths if they are not yet watched
-		// TODO: Should remove watched paths if they get no events for 24 hours
 
 		if err := AddPaths(watcher, path); err != nil {
 			log.Printf("WARN: Error watching %s: %s", path, err)
