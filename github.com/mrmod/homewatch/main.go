@@ -85,6 +85,17 @@ func debugFlags() {
 	log.Printf("DebugOutput: %v", flagDebug)
 	log.Printf("VerboseOutput: %v", flagVerbose)
 }
+func tryCreateS3Uploader() *S3Uploader {
+	// Setup S3 uploader for video files
+	if flagEnableVideoUpload && strings.HasPrefix(flagS3VideoBucketUrl, "s3://") {
+		log.Printf("DEBUG: Creating S3 uploader for video files to %s", flagS3VideoBucketUrl)
+		uploader := NewS3Uploader(DefaultS3Client(), flagS3VideoBucketUrl)
+		uploader.TrimLocalPrefix(flagVideoTrimPrefix)
+
+		return uploader
+	}
+	return nil
+}
 
 func main() {
 
@@ -95,7 +106,24 @@ func main() {
 
 	if flagEnableV2 {
 		log.Printf("Starting v2")
-		v2.Listen(strings.Split(flagV2WatchPaths, ",")...)
+		fileEvents := make(chan string, 1)
+		uploader := tryCreateS3Uploader()
+		go func() {
+			for fileEvent := range fileEvents {
+				log.Printf("DEBUG: File event: %s", fileEvent)
+				if uploader != nil {
+
+					go func(videoFilename string) {
+						done := make(chan int, 1)
+						log.Printf("DEBUG: Uploading file: %s", videoFilename)
+						go uploader.UploadFile(videoFilename, done)
+						<-done
+					}(fileEvent)
+				}
+			}
+		}()
+		v2.Listen(fileEvents, strings.Split(flagV2WatchPaths, ",")...)
+
 		return
 	}
 	syslogServer := NewSyslogServer(flagSyslogServerAddress)
