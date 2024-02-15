@@ -55,6 +55,10 @@ func NewS3Uploader(s3Client *s3.Client, bucketUrl string) *S3Uploader {
 		log.Printf("%s isn't a valid S3 bucket URL: %s", bucketUrl, err)
 		return nil
 	}
+	if !canAccessBucket(s3Client, url.Host) {
+		log.Panicf("PANIC: Unable to access S3 bucket %s", url.Host)
+	}
+	log.Printf("INFO: Bucket access ok: %s", url.Host)
 
 	return &S3Uploader{
 		Context:  context.TODO(),
@@ -62,6 +66,17 @@ func NewS3Uploader(s3Client *s3.Client, bucketUrl string) *S3Uploader {
 		Bucket:   url.Host,
 		prefix:   url.Path,
 	}
+}
+
+func canAccessBucket(client *s3.Client, bucket string) bool {
+	_, err := client.HeadBucket(context.TODO(), &s3.HeadBucketInput{
+		Bucket: &bucket,
+	})
+	if err != nil {
+		log.Printf("ERROR: Unable to access S3 bucket %s: %s", bucket, err)
+		return false
+	}
+	return true
 }
 
 /*
