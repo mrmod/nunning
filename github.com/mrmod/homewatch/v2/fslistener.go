@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -36,13 +37,16 @@ func AddPaths(w *fsnotify.Watcher, root string) error {
 	return filepath.WalkDir(root, walkFun)
 }
 
-// HandleWrite is called when a file is written to
-func HandleWrite(event fsnotify.Event) {
-	log.Printf("DEBUG: Modified file: %s", event.Name)
+// HandleCreate is called when a file is created to
+func HandleCreate(filenames chan string, event fsnotify.Event) {
+	log.Printf("DEBUG: Created file: %s", event.Name)
+	if strings.HasSuffix(event.Name, ".dav") {
+		filenames <- event.Name
+	}
 }
 
 // Listen starts watching for changes on the given paths
-func Listen(paths ...string) {
+func Listen(createEventFilenames chan string, paths ...string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		panic(err)
@@ -58,10 +62,14 @@ func Listen(paths ...string) {
 				if !ok {
 					return
 				}
-				log.Printf("event: %#v Op: %s", event, event.Op)
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					// TODO: project:homewatch2.0
-					HandleWrite(event)
+				log.Printf("DEBUG: event: %#v Op: %s", event, event.Op)
+				if event.Op&fsnotify.Create == fsnotify.Create {
+					// Add a watcher if this is a path
+					if err := AddPaths(watcher, event.Name); err != nil {
+						log.Printf("WARN: Error adding path new path %s: %s", event.Name, err)
+					}
+					//
+					HandleCreate(createEventFilenames, event)
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
