@@ -37,7 +37,7 @@ func AddPaths(w *fsnotify.Watcher, root string) error {
 	return filepath.WalkDir(root, walkFun)
 }
 
-// HandleCreate is called when a file is created to
+// HandleCreate is called when a video file is created by a camera
 func HandleCreate(filenames chan string, event fsnotify.Event) {
 	log.Printf("DEBUG: Created file: %s", event.Name)
 	if strings.HasSuffix(event.Name, ".dav") {

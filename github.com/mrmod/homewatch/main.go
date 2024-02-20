@@ -32,8 +32,9 @@ var (
 	flagEnableEventUpload bool
 	flagEnableVideoUpload bool
 
-	flagEnableV2     bool
-	flagV2WatchPaths string
+	flagEnableV2        bool
+	flagV2WatchPaths    string
+	flagV2EnableMetrics bool
 )
 
 func parseFlags() {
@@ -59,6 +60,7 @@ func parseFlags() {
 
 	flag.BoolVar(&flagEnableV2, "v2", false, "Enable v2 API")
 	flag.StringVar(&flagV2WatchPaths, "v2-watch-paths", "", "Comma separated list of paths to watch for changes")
+	flag.BoolVar(&flagV2EnableMetrics, "v2-enable-metrics", false, "Enable prometheus metrics")
 	flag.Parse()
 	if len(strings.Split(flagSyslogServerAddress, ":")) != 2 {
 		panic(fmt.Sprintf("Invalid syslogserveraddress: %s", flagSyslogServerAddress))
@@ -105,12 +107,22 @@ func main() {
 	}
 
 	if flagEnableV2 {
+		var metrics *v2.CameraMetrics
 		log.Printf("Starting v2")
 		fileEvents := make(chan string, 1)
 		uploader := tryCreateS3Uploader()
+		if flagV2EnableMetrics {
+			// v2.MetricsPort = "2112"
+			metrics = v2.NewCameraMetrics()
+			go v2.MetricsHandler()
+		}
+
 		go func() {
 			for fileEvent := range fileEvents {
 				log.Printf("DEBUG: File event: %s", fileEvent)
+				if flagV2EnableMetrics && metrics != nil {
+					metrics.VideosCaptured.Inc()
+				}
 				if uploader != nil {
 
 					go func(videoFilename string) {
