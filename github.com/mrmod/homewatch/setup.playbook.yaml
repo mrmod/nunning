@@ -1,7 +1,8 @@
 
 - name: Setup video upload destination
   hosts: video_upload_destinations
-
+  vars_files:
+    - setup.vars.yaml
   tasks:
   - name: Uploader user
     ansible.builtin.user:
@@ -74,3 +75,12 @@
       owner: grafana
       group: grafana
       
+  - name: Homewatch start script
+    tags:
+      - homewatch
+    ansible.builtin.template:
+      src: start_homewatch.sh.j2
+      dest: /usr/local/bin/start_homewatch.sh
+      owner: root
+      group: root
+      mode: 0755

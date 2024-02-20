@@ -2,6 +2,14 @@ Homewatch proxies SFTP uploads from Lorex cameras to a web-hosting service.
 
 This is just a toy.
 
+# Release Process
+
+Releases can be deployed to a aystem for testing
+
+```
+./release.sh
+```
+
 ## SFTP Proxy Feature
 
 When an SFTP upload arrives at the Homewatch host (aka: CamerasManagerHost)
