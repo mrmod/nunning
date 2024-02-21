@@ -113,18 +113,19 @@ func main() {
 		uploader := tryCreateS3Uploader()
 		if flagV2EnableMetrics {
 			// v2.MetricsPort = "2112"
-			metrics = v2.NewCameraMetrics()
-			go v2.MetricsHandler()
+			metrics = v2.NewCameraMetrics(flagVideoTrimPrefix)
+			go metrics.Handle()
 		}
 
 		go func() {
 			for fileEvent := range fileEvents {
 				log.Printf("DEBUG: File event: %s", fileEvent)
 				if flagV2EnableMetrics && metrics != nil {
-					metrics.VideosCaptured.Inc()
+					log.Printf("DEBUG: Sending video event to metrics: %s", fileEvent)
+					metrics.VideoEvents <- fileEvent
 				}
-				if uploader != nil {
 
+				if uploader != nil {
 					go func(videoFilename string) {
 						done := make(chan int, 1)
 						log.Printf("DEBUG: Uploading file: %s", videoFilename)
