@@ -131,6 +131,7 @@ func main() {
 						log.Printf("DEBUG: Uploading file: %s", videoFilename)
 						go uploader.UploadFile(videoFilename, done)
 						<-done
+						metrics.UploadEvents <- videoFilename
 					}(fileEvent)
 				}
 			}
