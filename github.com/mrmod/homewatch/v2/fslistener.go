@@ -5,8 +5,18 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
+)
+
+type WatchedPath struct {
+	Path           string
+	WatchStartTime time.Time
+}
+
+var (
+	watchedPaths = map[string]*WatchedPath{}
 )
 
 func tryAddPath(w *fsnotify.Watcher, root string) error {
@@ -15,7 +25,22 @@ func tryAddPath(w *fsnotify.Watcher, root string) error {
 		return err
 	}
 	log.Printf("INFO: Added watch on '%s'", root)
+	watchedPaths[root] = &WatchedPath{root, time.Now().UTC()}
 	return nil
+}
+
+// WatchReaper Cleans up watches older than 24 hours
+func WatchReaper() {
+	log.Printf("DEBUG: Starting watch reaper")
+	for {
+		time.Sleep(1 * time.Hour)
+		for path, watchedPath := range watchedPaths {
+			if time.Since(watchedPath.WatchStartTime) > (24 * time.Hour) {
+				log.Printf("DEBUG: Removing watch on %s from %s", path, watchedPath.WatchStartTime)
+				delete(watchedPaths, path)
+			}
+		}
+	}
 }
 
 // AddPaths adds child paths of some root path
