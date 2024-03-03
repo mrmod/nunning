@@ -10,6 +10,12 @@ Releases can be deployed to a aystem for testing
 ./release.sh
 ```
 
+This builds the binary `make build-linux Version=${RELEASE_VERSION}`.
+
+Then runs the playbook `setup.playbook.yaml` for the `homewatch` tags with `RELEASE_VERSION=2.0.0-pre-abc123`.
+
+When `SERVICE_RESTART=yes`, the running HomewatchAgent will be killed on the `AGENT_IP` host and the new version started.
+
 ## SFTP Proxy Feature
 
 When an SFTP upload arrives at the Homewatch host (aka: CamerasManagerHost)
