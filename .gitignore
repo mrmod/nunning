@@ -1,0 +1,11 @@
+fuzzy-search/**
+homewatch/default-origin
+homewatch/default-origin/ui
+homewatch/default-origin/ui/**
+homewatch/lambda_cameras_manager
+homewatch/lambda_cookie_authorizer/**
+homewatch/lambda_dav_transcoder/**
+homewatch/lambda_dav_transcoder/**
+homewatch/lambda_iframe_extractor/**
+homewatch/lambda_videos/**
+terrastate
