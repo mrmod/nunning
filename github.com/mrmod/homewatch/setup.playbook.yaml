@@ -15,7 +15,6 @@
       # system: yes
       # cameras123
       password: "{{ 'cameras123' | password_hash('sha512') }}"
-      # password: '$6$rounds=656000$mysecretsalt$WRs1x/pyvZYww89hjn9jEMrAhIOe8PRoY7UAr4dAnj0UT797MKFk/2qdi1vPX4E7fehVikLETN4cr5gQUNmIA.'
 
   - name: Uploader group
     ansible.builtin.template.group:
@@ -75,7 +74,7 @@
       owner: grafana
       group: grafana
       
-  - name: Homewatch start script
+  - name: Deploy start_homewatch.sh
     tags:
       - homewatch
     ansible.builtin.template:
