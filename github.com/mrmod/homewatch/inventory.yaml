@@ -1,9 +1,0 @@
-video_upload_destinations:
-  hosts:
-    # fanny:
-    #   ansible_host: 192.168.128.153
-    #   ansible_user: bruce
-    fanny_remote:
-      ansible_host: 10.0.0.69
-      ansible_port: 2022
-      # ansible_user: bruce

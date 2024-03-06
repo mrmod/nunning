@@ -1,0 +1,5 @@
+video_upload_destinations:
+  hosts:
+    homewatch_agent:
+      ansible_host: 192.168.0.100
+      ansible_user: homewatch

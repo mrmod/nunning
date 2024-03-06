@@ -1,0 +1,16 @@
+aws:
+  secret_access_key: SecretAccessKey
+  access_key_id: AccessKeyId
+
+homewatch_agent:
+  # The path to the binary uploaded to the agent
+  binary_path: /temporary/upload_path
+  # Comma-delimited list of paths to watch
+  watch_paths: /path/to/watch1,/path/to/watch2,/path/to/watch3
+
+# prometheus integration
+# prometheus:
+#   # Homewatch Agent Endpoint address for Prometheus to scrape
+#   homewatch_agent_address: 'localhost:2112'
+
+setup_uploader_user: false
