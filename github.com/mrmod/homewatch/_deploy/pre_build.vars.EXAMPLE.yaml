@@ -1,0 +1,16 @@
+aws:
+  access_key_id: AccessKeyId
+  secret_access_key: SecretAccessKey
+
+homewatch_agent:
+  binary_path: /tmp/homewatch
+  bucket: backyardsanctuary.com
+  # bucket_prefix: No leading or trailing slash
+  bucket_prefix: "Videos"
+  trim_prefix: /uploads
+  watch_paths: /uploads/FrontDoorCam,/uploads/BackyardCam,/uploads/GarageCam
+
+prometheus:
+  homewatch_agent_address: 'localhost:2112'
+
+setup_uploader_user: false

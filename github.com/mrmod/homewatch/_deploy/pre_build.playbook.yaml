@@ -1,0 +1,15 @@
+- name: Create Entrypoint for Docker image
+  hosts: localhost
+  vars_files:
+    - setup.vars.yaml
+  tasks:
+    - name: Create Entrypoint
+      ansible.builtin.template:
+        src: entrypoint.sh.j2
+        dest: "../_dist/entrypoint.sh"
+        mode: 0755
+    - name: Create Release
+      ansible.builtin.copy:
+        src: "../_dist/homewatch-{{ release_version }}"
+        dest: "../_dist/release"
+        mode: 0755
