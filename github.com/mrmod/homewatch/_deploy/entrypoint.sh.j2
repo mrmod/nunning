@@ -18,5 +18,5 @@ WATCH_PATHS={{ homewatch_agent.watch_paths }}
         --v2-watch-paths $WATCH_PATHS \
         --v2-enable-watch-reaper \
         --enable-video-upload \
-        --s3-video-bucket-url="s3://$BUCKET/$ENVIRONMENT/Videos" \
+        --s3-video-bucket-url="s3://$BUCKET/$ENVIRONMENT/{{ homewatch_agent.bucket_prefix }}" \
         --video-trim-prefix="$TRIM_PREFIX"
