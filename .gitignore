@@ -9,3 +9,4 @@ homewatch/lambda_dav_transcoder/**
 homewatch/lambda_iframe_extractor/**
 homewatch/lambda_videos/**
 terrastate
+_dist

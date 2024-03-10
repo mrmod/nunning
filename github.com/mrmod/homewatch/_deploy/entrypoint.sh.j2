@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -o pipefail -x
 
@@ -8,7 +8,7 @@ export AWS_REGION=us-west-2
 
 ENVIRONMENT=dev
 BUCKET={{ homewatch_agent.bucket }}
-TRIM_PREFIX={{ homewatch_agen.trim_prefix }}
+TRIM_PREFIX={{ homewatch_agent.trim_prefix }}
 WATCH_PATHS={{ homewatch_agent.watch_paths }}
 
 # Exposes Prometheus metrics endpoint on default port

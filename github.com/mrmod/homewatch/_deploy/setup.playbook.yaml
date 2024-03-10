@@ -1,0 +1,84 @@
+- name: Setup video upload destination
+  hosts: video_upload_destinations
+  vars_files:
+    - setup.vars.yaml
+  tasks:
+    - name: Uploader user
+      become: yes
+      ansible.builtin.user:
+        name: uploader
+        state: present
+        shell: /sbin/nologin
+        # Relative to chroot of /sftp
+        home: /uploader
+        createhome: no
+        groups: docker
+        append: yes
+        password: "{{ 'DoNotUseThis!' | password_hash('sha512') }}"
+
+    - name: Uploader group
+      ansible.builtin.template.group:
+        name: uploader
+        state: present
+
+    - name: Upload directory
+      ansible.builtin.template.file:
+        path: /sftp
+        state: directory
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Uploader SFTP path
+      ansible.builtin.template.file:
+        path: /sftp/uploader
+        state: directory
+        mode: 0755
+        owner: uploader
+        group: uploader
+
+    - name: SFTP configuration
+      ansible.builtin.template:
+        src: etc_ssh_sshd_config_d_20-sftp.conf.j2
+        dest: /etc/ssh/sshd_config.d/20-sftp.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Restart SSH
+      ansible.builtin.template.service:
+        name: sshd
+        state: restarted
+
+    - name: Uploader group
+      ansible.builtin.template.group:
+        name: uploader
+        state: present
+        gid: 3100
+
+    - name: Grafana user
+      ansible.builtin.user:
+        name: grafana
+        state: present
+        shell: /sbin/nologin
+        home: /grafana
+        createhome: yes
+        uid: 3100
+
+    - name: Grafana directory
+      ansible.builtin.template.file:
+        path: /grafana
+        state: directory
+        mode: 0755
+        owner: grafana
+        group: grafana
+
+    - name: Homewatch start script
+      tags:
+        - homewatch
+      ansible.builtin.template:
+        src: start_homewatch.sh.j2
+        dest: /usr/local/bin/start_homewatch.sh
+        owner: root
+        group: root
+        mode: 0755
