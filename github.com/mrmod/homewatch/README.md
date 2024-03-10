@@ -24,6 +24,53 @@ Given we want to upload DAV-encoded H.265 Videos to S3 so they can be transcoded
 And we can use syslog to learn `.dav` encoded files are ready for upload
 Then we should listen for syslog messages from SFTP to trigger the SFTP Proxy Feature
 
+# Packaging
+
+## Build the Package
+
+`RELEASE_VERSION=2.0.0-pre1`
+
+```
+make build-linux VERSION=$RELEASE_VERSION
+```
+
+## Build the Container Artifacts
+
+```
+cd _deploy
+ansible-playbook \
+    --inventory inventory.yaml \
+    --extra-vars @setup.vars.yaml.local \
+    --extra-var release_version=${RELEASE_VERSION} \
+    -l localhost \
+    setup.playbook.yaml
+```
+
+## Build the Container
+
+```
+docker build \
+    -t homewatch:${RELEASE_VERSION} \
+    .
+```
+
+# Deploy
+
+```
+docker push $REPO
+```
+
+# Release and Run
+
+```
+docker run \
+    --name homewatch \
+    --publish 2112:2112 \
+    -v "${UploadsPath}:/upload" \
+    -u "${UploadsUserUID}:${UploadsUserGID}" \
+    homewatch:${RELEASE_VERSION}
+```
+
 # Building
 
 ## For Linux
@@ -35,6 +82,10 @@ make build-linux
 ```
 make build-pi
 ```
+
+# Infrastructucture
+
+Found [in _infra](_infra/README.md). Deployed with terraform.
 
 # Deploying
 
