@@ -48,7 +48,7 @@ func AddPaths(w *fsnotify.Watcher, root string) error {
 	errorPaths := []string{}
 	walkFun := func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() {
-			log.Printf("DEBUG: Skipping file %s", path)
+			log.Printf("DEBUG: Won't add watcher on file %s", path)
 			return nil
 		}
 		if err := tryAddPath(w, path); err != nil {

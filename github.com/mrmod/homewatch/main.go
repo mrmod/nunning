@@ -136,6 +136,7 @@ func main() {
 						log.Printf("DEBUG: Uploading file: %s", videoFilename)
 						go uploader.UploadFile(videoFilename, done)
 						<-done
+						log.Printf("DEBUG: Done uploading file: %s", videoFilename)
 						metrics.UploadEvents <- videoFilename
 					}(fileEvent)
 				}
@@ -145,6 +146,7 @@ func main() {
 
 		return
 	}
+	log.Printf("Starting v1")
 	syslogServer := NewSyslogServer(flagSyslogServerAddress)
 	messageHandler := NewSyslogMessageHandler()
 

@@ -109,6 +109,7 @@ func (u *S3Uploader) UploadFile(filepath string, status chan<- int) {
 
 	sensorVideoPath := strings.TrimPrefix(filepath, u.localTrimPrefix)
 	key := strings.TrimPrefix(fmt.Sprintf("%s/%s", u.prefix, sensorVideoPath), "/")
+	log.Printf("DEBUG: Uploading %s to %s", filepath, key)
 	input := &s3.PutObjectInput{
 		Bucket:       &u.Bucket,
 		Key:          &key,
