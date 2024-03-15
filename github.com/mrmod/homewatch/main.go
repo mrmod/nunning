@@ -32,10 +32,11 @@ var (
 	flagEnableEventUpload bool
 	flagEnableVideoUpload bool
 
-	flagEnableV2            bool
-	flagV2WatchPaths        string
-	flagV2EnableMetrics     bool
-	flagV2EnableWatchReaper bool
+	flagEnableV2             bool
+	flagV2WatchPaths         string
+	flagV2EnableMetrics      bool
+	flagV2EnableWatchReaper  bool
+	flagV2EnableUploadReaper bool
 )
 
 func parseFlags() {
@@ -63,6 +64,7 @@ func parseFlags() {
 	flag.StringVar(&flagV2WatchPaths, "v2-watch-paths", "", "Comma separated list of paths to watch for changes")
 	flag.BoolVar(&flagV2EnableMetrics, "v2-enable-metrics", false, "Enable prometheus metrics")
 	flag.BoolVar(&flagV2EnableWatchReaper, "v2-enable-watch-reaper", false, "Enable watch reaper")
+	flag.BoolVar(&flagV2EnableUploadReaper, "v2-enable-upload-reaper", false, "Enable upload reaper")
 	flag.Parse()
 	if len(strings.Split(flagSyslogServerAddress, ":")) != 2 {
 		panic(fmt.Sprintf("Invalid syslogserveraddress: %s", flagSyslogServerAddress))
@@ -120,6 +122,9 @@ func main() {
 		}
 		if flagV2EnableWatchReaper {
 			go v2.WatchReaper()
+		}
+		if flagV2EnableUploadReaper {
+			go v2.UploadReaper()
 		}
 
 		go func() {

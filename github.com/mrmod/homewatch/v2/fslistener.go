@@ -3,6 +3,7 @@ package v2
 import (
 	"io/fs"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -15,19 +16,15 @@ type WatchedPath struct {
 	WatchStartTime time.Time
 }
 
-var (
-	watchedPaths = map[string]*WatchedPath{}
-)
-
-func tryAddPath(w *fsnotify.Watcher, root string) error {
-	if err := w.Add(root); err != nil {
-		log.Printf("WARN: Error watching '%s': %s", root, err)
-		return err
-	}
-	log.Printf("INFO: Added watch on '%s'", root)
-	watchedPaths[root] = &WatchedPath{root, time.Now().UTC()}
-	return nil
+type UploadedPath struct {
+	Path       string
+	UploadTime time.Time
 }
+
+var (
+	watchedPaths  = map[string]*WatchedPath{}
+	uploadedPaths = map[string]*UploadedPath{}
+)
 
 // WatchReaper Cleans up watches older than 24 hours
 func WatchReaper() {
@@ -41,6 +38,32 @@ func WatchReaper() {
 			}
 		}
 	}
+}
+
+// UploadReaper Cleans up uploaded files older than 7 days
+func UploadReaper() {
+	log.Printf("DEBUG: Starting upload reaper")
+	for {
+		time.Sleep(1 * time.Hour)
+		for path, uploadedPath := range uploadedPaths {
+			if time.Since(uploadedPath.UploadTime) > (24 * 7 * time.Hour) {
+				log.Printf("DEBUG: Removing uploaded file on %s uploaded at %s", path, uploadedPath.UploadTime)
+				if err := os.Remove(path); err != nil {
+					log.Printf("WARN: Error removing uploaded file %s: %s", path, err)
+				}
+			}
+		}
+	}
+}
+
+func tryAddPath(w *fsnotify.Watcher, root string) error {
+	if err := w.Add(root); err != nil {
+		log.Printf("WARN: Error watching '%s': %s", root, err)
+		return err
+	}
+	log.Printf("INFO: Added watch on '%s'", root)
+	watchedPaths[root] = &WatchedPath{root, time.Now().UTC()}
+	return nil
 }
 
 // AddPaths adds child paths of some root path
