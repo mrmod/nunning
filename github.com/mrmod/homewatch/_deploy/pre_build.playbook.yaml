@@ -10,6 +10,6 @@
         mode: 0755
     - name: Create Release
       ansible.builtin.copy:
-        src: "../_dist/homewatch-{{ release_version }}"
+        src: "../_dist/homewatch-{{ release_version }}-{{ homewatch_agent.platform }}-{{ homewatch_agent.arch }}"
         dest: "../_dist/release"
         mode: 0755

@@ -39,11 +39,11 @@ make build-linux VERSION=$RELEASE_VERSION
 ```
 cd _deploy
 ansible-playbook \
-    --inventory inventory.yaml \
-    --extra-vars @setup.vars.yaml.local \
+    --inventory inventory.yaml  \
+    --extra-vars @pre_build.vars.yaml \
     --extra-var release_version=${RELEASE_VERSION} \
-    -l localhost \
-    setup.playbook.yaml
+    --extra-var "prometheus.homewatch_agent_address=localhost:9112 \
+    pre_build.playbook.yaml
 ```
 
 ## Build the Container
@@ -52,6 +52,7 @@ ansible-playbook \
 docker build \
     -t homewatch:${RELEASE_VERSION} \
     .
+docker tag homewatch:${RELEASE_VERSION} ${HOMEWATCH_ECR_REPO}:${RELEASE_VERSION}
 ```
 
 # Deploy
