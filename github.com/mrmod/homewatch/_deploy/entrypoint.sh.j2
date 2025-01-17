@@ -17,6 +17,7 @@ WATCH_PATHS={{ homewatch_agent.watch_paths }}
         --v2-enable-metrics \
         --v2-watch-paths $WATCH_PATHS \
         --v2-enable-watch-reaper \
+        --v2-enable-upload-reaper \
         --enable-video-upload \
         --s3-video-bucket-url="s3://$BUCKET/$ENVIRONMENT/{{ homewatch_agent.bucket_prefix }}" \
         --video-trim-prefix="$TRIM_PREFIX"
