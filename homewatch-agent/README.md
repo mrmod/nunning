@@ -1,6 +1,4 @@
-Homewatch proxies SFTP uploads from Lorex cameras to a web-hosting service.
-
-This is just a toy.
+Homewatch agent listens for traditional security camera DAV uploads, re-encodes them to H264, then uploads them to a cloud-based app for viewing over the web.
 
 # Release Process
 
